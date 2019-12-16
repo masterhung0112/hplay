@@ -8,12 +8,39 @@ file(MAKE_DIRECTORY ${DOWNLOADS})
 
 set(BUILD_SCRIPT ${CMAKE_CURRENT_LIST_DIR}\\build.sh)
 acquire_msys(MSYS_ROOT PACKAGES perl gcc diffutils make)
+set(BASH ${MSYS_ROOT}/usr/bin/bash.exe)
+
+set(ROOT_DIR ${ROOT_DIR_CANDIDATE})
+set(TARGET_TRIPLET x86-windows)
+set(PORT ffmpeg_play)
+set(CURRENT_INSTALLED_DIR ${ROOT_DIR}/installed/${TARGET_TRIPLET} CACHE PATH "Location to install final packages")
+set(DOWNLOADS ${ROOT_DIR}/downloads CACHE PATH "Location to download sources and tools")
+set(PACKAGES_DIR ${ROOT_DIR}/packages CACHE PATH "Location to store package images")
+set(BUILDTREES_DIR ${ROOT_DIR}/buildtrees CACHE PATH "Location to perform actual extract+config+build")
+set(CURRENT_BUILDTREES_DIR ${BUILDTREES_DIR}/${PORT})
+set(CURRENT_PACKAGES_DIR ${PACKAGES_DIR}/${PORT}_${TARGET_TRIPLET})
+
+#FILE(MAKE_DIRECTORY "${CURRENT_BUILDTREES_DIR}")
+#FILE(MAKE_DIRECTORY "${CURRENT_PACKAGES_DIR}")
 
 download_distfile(ARCHIVE
     URLS "http://ffmpeg.org/releases/ffmpeg-4.1.tar.bz2"
     FILENAME "ffmpeg-4.1.tar.bz2"
     SHA512 ccf6d07268dc47e08ca619eb182a003face2a8ee73ec1a28157330dd7de1df88939def1fc1c7e6b6ac7b59752cdad84657d589b2fafb73e14e5ef03fb6e33417
 )
+
+extract_source_archive_ex(
+    OUT_SOURCE_PATH SOURCE_PATH
+    ARCHIVE ${ARCHIVE}
+#    PATCHES
+#        create-lib-libraries.patch
+#        detect-openssl.patch
+#        configure_opencv.patch
+#        fix_windowsinclude-in-ffmpegexe-1.patch
+#        fix_windowsinclude-in-ffmpegexe-2.patch
+#        fix_windowsinclude-in-ffmpegexe-3.patch
+)
+
 
 SET(ROOT_DIR_CANDIDATE ${CMAKE_CURRENT_LIST_DIR})
 #while(IS_DIRECTORY ${ROOT_DIR_CANDIDATE} AND NOT EXISTS "${ROOT_DIR_CANDIDATE}/.vcpkg-root")
@@ -24,18 +51,10 @@ SET(ROOT_DIR_CANDIDATE ${CMAKE_CURRENT_LIST_DIR})
 #        SET(ROOT_DIR_CANDIDATE ${ROOT_DIR_TEMP})
 #    endif()
 #endwhile()
-
-set(ROOT_DIR ${ROOT_DIR_CANDIDATE})
-set(TARGET_TRIPLET x86-windows)
-set(CURRENT_INSTALLED_DIR ${ROOT_DIR}/installed/${TARGET_TRIPLET} CACHE PATH "Location to install final packages")
-set(DOWNLOADS ${ROOT_DIR}/downloads CACHE PATH "Location to download sources and tools")
-set(PACKAGES_DIR ${ROOT_DIR}/packages CACHE PATH "Location to store package images")
-set(BUILDTREES_DIR ${ROOT_DIR}/buildtrees CACHE PATH "Location to perform actual extract+config+build")
-set(CURRENT_BUILDTREES_DIR ${BUILDTREES_DIR}/${PORT})
-set(CURRENT_PACKAGES_DIR ${PACKAGES_DIR}/${PORT}_${TARGET_TRIPLET})
 	
 set(OPTIONS "--enable-asm --enable-yasm --disable-doc --enable-debug")
 set(OPTIONS "${OPTIONS} --enable-runtime-cpudetect")
+set(OPTIONS_RELEASE "")
 
 message(STATUS "Building ${_csc_PROJECT_PATH} for Release")
 file(MAKE_DIRECTORY ${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-rel)
