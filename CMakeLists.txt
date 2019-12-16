@@ -7,7 +7,7 @@ set(DOWNLOADS ${CMAKE_CURRENT_LIST_DIR}/downloads)
 file(MAKE_DIRECTORY ${DOWNLOADS})
 
 set(BUILD_SCRIPT ${CMAKE_CURRENT_LIST_DIR}\\build.sh)
-acquire_msys(MSYS_ROOT PACKAGES perl gcc diffutils make)
+acquire_msys(MSYS_ROOT PACKAGES diffutils make)
 set(BASH ${MSYS_ROOT}/usr/bin/bash.exe)
 
 set(ROOT_DIR ${ROOT_DIR_CANDIDATE})
@@ -51,7 +51,17 @@ SET(ROOT_DIR_CANDIDATE ${CMAKE_CURRENT_LIST_DIR})
 #        SET(ROOT_DIR_CANDIDATE ${ROOT_DIR_TEMP})
 #    endif()
 #endwhile()
-	
+
+find_acquire_program(YASM)
+get_filename_component(YASM_EXE_PATH ${YASM} DIRECTORY)
+
+set(ENV{INCLUDE} "${CURRENT_INSTALLED_DIR}/include;$ENV{INCLUDE}")
+set(ENV{LIB} "${CURRENT_INSTALLED_DIR}/lib;$ENV{LIB}")
+
+set(_csc_PROJECT_PATH ffmpeg)
+
+file(REMOVE_RECURSE ${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-dbg ${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-rel)
+
 set(OPTIONS "--enable-asm --enable-yasm --disable-doc --enable-debug")
 set(OPTIONS "${OPTIONS} --enable-runtime-cpudetect")
 set(OPTIONS_RELEASE "")
