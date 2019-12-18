@@ -55,6 +55,7 @@ SET(ROOT_DIR_CANDIDATE ${CMAKE_CURRENT_LIST_DIR})
 find_acquire_program(YASM)
 get_filename_component(YASM_EXE_PATH ${YASM} DIRECTORY)
 
+set(ENV{PATH} "$ENV{PATH};${YASM_EXE_PATH}")
 set(ENV{INCLUDE} "${CURRENT_INSTALLED_DIR}/include;$ENV{INCLUDE}")
 set(ENV{LIB} "${CURRENT_INSTALLED_DIR}/lib;$ENV{LIB}")
 
@@ -65,6 +66,42 @@ file(REMOVE_RECURSE ${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-dbg ${CURRENT_BU
 set(OPTIONS "--enable-asm --enable-yasm --disable-doc --enable-debug")
 set(OPTIONS "${OPTIONS} --enable-runtime-cpudetect")
 set(OPTIONS_RELEASE "")
+
+if("ffmpeg" IN_LIST FEATURES)
+    set(OPTIONS "${OPTIONS} --enable-ffmpeg")
+else()
+    set(OPTIONS "${OPTIONS} --disable-ffmpeg")
+endif()
+
+if("ffplay" IN_LIST FEATURES)
+    set(OPTIONS "${OPTIONS} --enable-ffplay")
+else()
+    set(OPTIONS "${OPTIONS} --disable-ffplay")
+endif()
+
+if("ffprobe" IN_LIST FEATURES)
+    set(OPTIONS "${OPTIONS} --enable-ffprobe")
+else()
+    set(OPTIONS "${OPTIONS} --disable-ffprobe")
+endif()
+
+if("x264" IN_LIST FEATURES)
+    set(OPTIONS "${OPTIONS} --enable-libx264")
+else()
+    set(OPTIONS "${OPTIONS} --disable-libx264")
+endif()
+
+if("opencl" IN_LIST FEATURES)
+    set(OPTIONS "${OPTIONS} --enable-opencl")
+else()
+    set(OPTIONS "${OPTIONS} --disable-opencl")
+endif()
+
+if("lzma" IN_LIST FEATURES)
+    set(OPTIONS "${OPTIONS} --enable-lzma")
+else()
+    set(OPTIONS "${OPTIONS} --disable-lzma")
+endif()
 
 message(STATUS "Building ${_csc_PROJECT_PATH} for Release")
 file(MAKE_DIRECTORY ${CURRENT_BUILDTREES_DIR}/${TARGET_TRIPLET}-rel)
